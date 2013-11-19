@@ -20,7 +20,8 @@
     "watch": "~0.8.0",
     "websocket": "~1.0.8",
     "wrench": "~1.5.1",
-    "xmldom": "~0.1.16"
+    "xmldom": "~0.1.16",
+    "fs.extra": "~1.2.1"
   },
   "description": "Rapidly cook up games for HTML5 and Flash.",
   "engines": {

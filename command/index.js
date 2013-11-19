@@ -4,7 +4,8 @@
 // https://github.com/aduros/flambe/blob/master/LICENSE.txt
 
 var Q = require("q");
-var fs = require("fs");
+//var fs = require("fs");
+var fs = require("fs.extra");
 var ncp = require("ncp").ncp;
 var os = require("os");
 var path = require("path");
@@ -17,6 +18,9 @@ var CACHE_DIR = "build/.cache/";
 var HAXE_COMPILER_PORT = 6000;
 var HTTP_PORT = 7000;
 var SOCKET_PORT = HTTP_PORT+1;
+
+//var ASSETS_DIR = "assets";
+var ASSETS_DIR = "medias/game/asset";
 
 exports.PLATFORMS = ["html", "flash", "android", "ios"];
 
@@ -119,7 +123,7 @@ exports.build = function (config, platforms, opts) {
 
     var commonFlags = [];
 
-    var assetPaths = getAllPaths(config, "assets");
+    var assetPaths = getAllPaths(config, ASSETS_DIR);
     var libPaths = getAllPaths(config, "libs");
     var srcPaths = getAllPaths(config, "src");
     var webPaths = getAllPaths(config, "web");
@@ -182,7 +186,7 @@ exports.build = function (config, platforms, opts) {
         var js = "build/web/targets/main-html.js";
 
         return prepareWeb()
-        .then(function () { return prepareAssets("build/web/assets") })
+        .then(function () { return prepareAssets("build/web/"+ASSETS_DIR) })
         .then(function (assetFlags) {
             console.log("Building: " + js);
             var flags = commonFlags.concat(assetFlags).concat(htmlFlags);
@@ -211,7 +215,7 @@ exports.build = function (config, platforms, opts) {
             "-swf-version", "11", "-swf", swf]);
 
         return prepareWeb()
-        .then(function () { return prepareAssets("build/web/assets") })
+        .then(function () { return prepareAssets("build/web/"+ASSETS_DIR) })
         .then(function (assetFlags) {
             console.log("Building: " + swf);
             return haxe(commonFlags.concat(assetFlags).concat(flashFlags));
@@ -222,7 +226,7 @@ exports.build = function (config, platforms, opts) {
         var airFlags = swfFlags(true).concat(["-swf-version", "11.7", "-D", "air"]);
 
         wrench.mkdirSyncRecursive(CACHE_DIR+"air");
-        return prepareAssets(CACHE_DIR+"air/assets")
+        return prepareAssets(CACHE_DIR+"air/"+ASSETS_DIR)
         .then(function (assetFlags) {
             return haxe(commonFlags.concat(assetFlags).concat(airFlags).concat(flags));
         });
@@ -333,14 +337,15 @@ exports.build = function (config, platforms, opts) {
             var androidFlags = ["-package"];
             if (debug) {
                 var fdbHost = opts.fdbHost || getIP();
-                androidFlags.push("-target", "apk-debug", "-connect", fdbHost);
+                //androidFlags.push("-target", "apk-debug", "-connect", fdbHost);
+                androidFlags.push("-target", "apk-debug", "-listen");
             } else {
                 androidFlags.push("-target", "apk-captive-runtime");
             }
             androidFlags.push("-storetype", "pkcs12", "-keystore", cert, "-storepass", "password",
                 apk, xml);
             androidFlags = androidFlags.concat(pathOptions);
-            androidFlags.push("-C", CACHE_DIR+"air", swf, "assets");
+            androidFlags.push("-C", CACHE_DIR+"air", swf, ASSETS_DIR);
             return adt(androidFlags);
         });
     };
@@ -361,7 +366,8 @@ exports.build = function (config, platforms, opts) {
             var iosFlags = ["-package"];
             if (debug) {
                 var fdbHost = opts.fdbHost || getIP();
-                iosFlags.push("-target", "ipa-debug", "-connect", fdbHost);
+                //iosFlags.push("-target", "ipa-debug", "-connect", fdbHost);
+                iosFlags.push("-target", "ipa-debug", "-listen");
             } else {
                 iosFlags.push("-target", "ipa-ad-hoc");
             }
@@ -369,7 +375,7 @@ exports.build = function (config, platforms, opts) {
             iosFlags.push("-storetype", "pkcs12", "-keystore", cert, "-storepass", "password",
                 "-provisioning-profile", mobileProvision, ipa, xml);
             iosFlags = iosFlags.concat(pathOptions);
-            iosFlags.push("-C", CACHE_DIR+"air", swf, "assets");
+            iosFlags.push("-C", CACHE_DIR+"air", swf, ASSETS_DIR);
             return adt(iosFlags);
         });
     };
@@ -634,7 +640,7 @@ Server.prototype.start = function () {
 
     var watch = require("watch");
     var crypto = require("crypto");
-    watch.createMonitor("assets", {interval: 200}, function (monitor) {
+    watch.createMonitor(ASSETS_DIR, {interval: 200}, function (monitor) {
         monitor.on("changed", function (file) {
             console.log("Asset changed: " + file);
             var output = "build/web/"+file;
@@ -642,7 +648,7 @@ Server.prototype.start = function () {
                 var contents = fs.readFileSync(file);
                 fs.writeFileSync(output, contents);
                 self.broadcast("file_changed", {
-                    name: path.relative("assets", file),
+                    name: path.relative(ASSETS_DIR, file),
                     md5: crypto.createHash("md5").update(contents).digest("hex"),
                 });
             }
@@ -755,7 +761,8 @@ var copyDirs = function (dirs, dest, opts) {
         return prev.then(function () {
             return Q.nfcall(ncp, dir, dest, ncpOptions);
         });
-    }, Q.nfcall(fs.mkdir, dest).catch(function (){}));
+    //}, Q.nfcall(fs.mkdir, dest).catch(function (){}));
+    }, Q.nfcall(fs.mkdirp, dest).catch(function (){}));
 };
 
 var copyFileSync = function (from, to) {

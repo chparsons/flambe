@@ -52,7 +52,8 @@ class Manifest
         }
 
         var manifest = new Manifest();
-        manifest.relativeBasePath = "assets";
+        //manifest.relativeBasePath = "assets";
+        manifest.relativeBasePath = "medias/game/asset";
 
         for (asset in packData) {
             var name = asset.name;
