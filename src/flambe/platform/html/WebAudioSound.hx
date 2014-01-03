@@ -87,7 +87,7 @@ class WebAudioSound extends BasicAsset<WebAudioSound>
         return ctx != null;
     }
 
-    private static var _detectSupport = true;
+    private static var _detectSupport = false;
 }
 
 private class WebAudioPlayback
