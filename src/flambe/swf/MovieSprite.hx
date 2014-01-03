@@ -19,6 +19,8 @@ using flambe.util.Strings;
  */
 class MovieSprite extends Sprite
 {
+    public var play_once:Bool;
+
     /** The symbol this sprite displays. */
     public var symbol (default, null) :MovieSymbol;
 
@@ -52,6 +54,8 @@ class MovieSprite extends Sprite
         _frame = 0;
         _position = 0;
         goto(1);
+
+        play_once = false;
     }
 
     /**
@@ -103,8 +107,11 @@ class MovieSprite extends Sprite
         if (!paused) {
             _position += speed._*dt;
             if (_position > symbol.duration) {
+              if ( ! play_once )
                 _position = _position % symbol.duration;
-                looped = true;
+              else
+                _position = symbol.duration;
+              looped = true;
             }
         }
 
