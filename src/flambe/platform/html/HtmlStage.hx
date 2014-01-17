@@ -98,6 +98,14 @@ class HtmlStage
         // Nothing until mobile browsers support it
     }
 
+    public function requestFullscreenScaled()
+    {
+      var container = _canvas.parentElement;
+      container.style.width = "100%";
+      container.style.height = "100%";
+      onWindowResize(null);
+    }
+
     public function requestResize (width :Int, height :Int)
     {
         if (resizeCanvas(width, height)) {
