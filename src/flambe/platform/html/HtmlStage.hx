@@ -32,7 +32,8 @@ class HtmlStage
 
         // If the DPI is being scaled by the browser, reverse it so that one canvas pixel equals
         // one screen pixel
-        scaleFactor = computeScaleFactor();
+        //scaleFactor = computeScaleFactor();
+        scaleFactor = 1;
         if (scaleFactor != 1) {
             Log.info("Reversing device DPI scaling", ["scaleFactor", scaleFactor]);
             HtmlUtil.setVendorStyle(_canvas, "transform-origin", "top left");
