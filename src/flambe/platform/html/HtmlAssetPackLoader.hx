@@ -290,6 +290,20 @@ class HtmlAssetPackLoader extends BasicAssetPackLoader
             return [];
         }
 
+        //XXX quick fix
+        //requires plarform.js library and get_platform function previously added
+        //win7/ff26, safari
+        var platform = System.external.call('get_platform');
+        var win = ~/\b(Windows)\b/;
+        var v7 = ~/\b(7)\b/;
+        var ff26 = ~/\b(Firefox\/26.0)\b/;
+        var safari = ~/\b(Safari)\b/;
+        if ( (win.match( platform.os.family ) && v7.match( platform.os.version ) && ff26.match( userAgent ))
+            || safari.match( platform.name ) ) {
+            Log.warn("HTML5 audio is blacklisted (2) for this browser", ["userAgent", userAgent]);
+            return [];
+        }
+
         // Select what formats the browser supports
         var types = [
             { format: M4A,  mimeType: "audio/mp4; codecs=mp4a" },
