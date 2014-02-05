@@ -78,7 +78,8 @@ class HtmlAssetPackLoader extends BasicAssetPackLoader
         case MP3, M4A, OPUS, OGG, WAV:
             // If we made it this far, we definitely support audio and can play this asset
             if (WebAudioSound.supported) {
-                downloadArrayBuffer(url, entry, function (buffer) {
+                //downloadArrayBuffer(url, entry, function (buffer) {
+                downloadBlob(url, entry, function (buffer) {
                     WebAudioSound.ctx.decodeAudioData(buffer, function (decoded) {
                         handleLoad(entry, new WebAudioSound(decoded));
                     }, function () {
@@ -185,30 +186,30 @@ class HtmlAssetPackLoader extends BasicAssetPackLoader
         };
 
         var interval = 0;
-        if (untyped __js__("typeof")(xhr.onprogress) != "undefined") {
-            var attempts = XHR_ATTEMPTS;
-            xhr.onprogress = function (event :Dynamic) {
-                lastActivity = HtmlUtil.now();
-                handleProgress(entry, event.loaded);
-            };
-            interval = Browser.window.setInterval(function () {
-                // If the download has started, and enough time has passed since the last progress
-                // event, consider it stalled and abort
-                if (xhr.readyState >= 1 && HtmlUtil.now() - lastActivity > XHR_TIMEOUT) {
-                    xhr.abort();
+        //if (untyped __js__("typeof")(xhr.onprogress) != "undefined") {
+            //var attempts = XHR_ATTEMPTS;
+            //xhr.onprogress = function (event :Dynamic) {
+                //lastActivity = HtmlUtil.now();
+                //handleProgress(entry, event.loaded);
+            //};
+            //interval = Browser.window.setInterval(function () {
+                //// If the download has started, and enough time has passed since the last progress
+                //// event, consider it stalled and abort
+                //if (xhr.readyState >= 1 && HtmlUtil.now() - lastActivity > XHR_TIMEOUT) {
+                    //xhr.abort();
 
-                    // Retry stalled connections a few times
-                    --attempts;
-                    if (attempts > 0) {
-                        Log.warn("Retrying stalled asset request", ["url", entry.url]);
-                        start();
-                    } else {
-                        Browser.window.clearInterval(interval);
-                        handleError(entry, "Request timed out");
-                    }
-                }
-            }, 1000);
-        }
+                    //// Retry stalled connections a few times
+                    //--attempts;
+                    //if (attempts > 0) {
+                        //Log.warn("Retrying stalled asset request", ["url", entry.url]);
+                        //start();
+                    //} else {
+                        //Browser.window.clearInterval(interval);
+                        //handleError(entry, "Request timed out");
+                    //}
+                //}
+            //}, 1000);
+        //}
 
         xhr.onload = function (_) {
             Browser.window.clearInterval(interval);
