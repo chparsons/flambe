@@ -197,7 +197,7 @@ class Manifest
         return basePath;
     }
 
-    private static function inferFormat (url :String) :AssetFormat
+    public static function inferFormat (url :String) :AssetFormat
     {
         var extension = url.getUrlExtension();
         if (extension != null) {
