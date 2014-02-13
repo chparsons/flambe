@@ -298,10 +298,9 @@ class HtmlAssetPackLoader extends BasicAssetPackLoader
         var win = ~/\b(Windows)\b/;
         var v7 = ~/\b(7)\b/;
         var ff = ~/\b(Firefox)\b/;
-        var v26 = ~/\b(26)\b/;
         var safari = ~/\b(Safari)\b/; 
         if ( (win.match( platform.os.family ) && v7.match( platform.os.version ) 
-              && ff.match( platform.name ) && v26.match( platform.version ) )
+              && ff.match( platform.name )  )
             || safari.match( platform.name ) ) {
             Log.warn("HTML5 audio is blacklisted (2) for this browser", ["userAgent", userAgent]);
             return [];
